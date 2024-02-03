@@ -2,6 +2,7 @@ import subprocess
 import re
 from PIL import Image, ImageDraw, ImageFont
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import QTimer
 
 
@@ -44,7 +45,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             fsize = 120
         # Create an image
         img = Image.new("RGBA", (300, 300), color=(0, 0, 0, 0))  # bg color
-        font_size = ImageFont.truetype("/usr/share/fonts/X11/Type1/c0632bt_.pfb", fsize)
+        font_size = ImageFont.truetype("c0632bt_.pfb", fsize)
         d = ImageDraw.Draw(img)
         d.text(
             (5, 5),
@@ -54,13 +55,14 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             font=font_size,
         )  # text color
 
-        img.save("average.png")  
+        qim = QImage(img.tobytes(), img.size[0], img.size[1], QImage.Format_RGBA8888)
+        self.setIcon(QtGui.QIcon(QPixmap.fromImage(qim)))
 
-        self.setIcon(QtGui.QIcon("average.png")) 
+
 def main():
     app = QtWidgets.QApplication([])
     w = QtWidgets.QWidget()
-    tray_icon = SystemTrayIcon(QtGui.QIcon("average.png"), w)
+    tray_icon = SystemTrayIcon(QtGui.QIcon(), w)
     tray_icon.show()
     app.exec()
 
